@@ -1,0 +1,109 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap5.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+        integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+        crossorigin="anonymous" />
+
+    <title>MomentuAPP</title>
+
+    <!-- Tailwind CSS Link -->
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.1/tailwind.min.css">
+
+    <!-- Fontawesome Link -->
+    <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="/createOrder" class="btn btn-primary mt-4"><i class="fas fa-plus-square"></i></a>
+        <table id="orders" class="table table-bordered table-striped text-center mt-4">
+            <thead>
+                <tr class="text-white" style="background-color:#00a3ee;">
+                    <th scope="col">ID FACTURA</th>
+                    <th scope="col">NOMBRES</th>
+                    <th scope="col">FECHA FACTURA</th>
+                    <th scope="col">TOTAL</th>
+                    <th scope="col">ESTADO</th>
+                    <th scope="col">FECHA PAGO</th>
+                    <th scope="col">ACCIONES</th>
+                </tr>
+            </thead>
+            <!-- <tbody>       
+        </tbody> -->
+        </table>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" language="javascript"
+        src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" language="javascript"
+        src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script>
+        $('#orders').DataTable({
+            ajax: {
+                url: "/dataOrders",
+                dataSrc: ""
+            },
+            columns: [
+                { "data": "id" },
+                { 'data': 'names' },
+                { 'data': 'date' },
+                { 'data': 'total' },
+                { 'data': 'state' },
+                { 'data': 'paydate' },
+                {
+                    "data": null,
+                    "render": function (data) {
+                        return '<a title="Pagar" href="/payOrder/' + data.id + '" class="btn btn-success">' +
+                            '<form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/" >' +
+                            '<input name="merchantId"    type="hidden"  value="508029" >' +
+                            '<input name="accountId"     type="hidden"  value="512321" >' +
+                            '<input name="description"   type="hidden"  value="Pago Factura ' + data.id + ' MomentuAPP ' + data.names + '" >' +
+                            '<input name="referenceCode" type="hidden"  value="9c3313025f30b32f499981c2913e605b" >' +
+                            '<input name="amount"        type="hidden"  value="' + data.totalDirect + '.00" >' +
+                            '<input name="currency"      type="hidden"  value="COP" >' +
+                            '<input name="signature"     type="hidden"  value="b3378c94173fe6e0bce94a9e09d577ef" >' +
+                            '<input name="test"          type="hidden"  value="1" >' +
+                            '<input name="buyerEmail"    type="hidden"  value="' + data.user + '@gmail.com" >' +
+                            '<input name="responseUrl"   type="hidden"  value="http://localhost:5000/orders" >' +
+                            '<input name="confirmationUrl" type="hidden"  value="http://localhost:5000/orders" >' +
+                            '<input name="Submit" class="btn-success"        type="submit"  value="Pagar" >' +
+                            '</form>' +
+                            '</a><a title="Ver Detalle" href="/editOrder/' + data.id + '"class="btn btn-info"><i class="fas fa-edit"></i></a><a title="Eliminar" onclick="confirmar(' + data.id + ')" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>'
+                    }
+                }
+            ],
+            pageLength: 5,
+            lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'Todos']]
+        });
+
+        function confirmar(id) {
+            Swal.fire({
+                title: '¿Confirma eliminar la orden: ' + id + ' y su detalle?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Confirmar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = '/deleteOrder/' + id;
+                }
+            });
+        };
+    </script>
+</body>
