@@ -1,7 +1,7 @@
 # PRUEBA FINAL MOMENTU
 Ejecutar los siguientes comandos para ejecutar el proyecto:
 
-# instalacion
+# instalación
 npm install express mysql express-handlebars express-myconnection express-session body-parser
 # librerias restantes 
 npm install
